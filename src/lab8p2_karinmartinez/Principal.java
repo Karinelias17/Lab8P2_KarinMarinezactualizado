@@ -12,7 +12,13 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JComboBox;
+import javax.swing.JOptionPane;
+import javax.swing.JProgressBar;
+import javax.swing.table.DefaultTableModel;
 
 /**
  *
@@ -27,6 +33,7 @@ public class Principal extends javax.swing.JFrame {
         actualizarPartida(jComboBox1);
         actualizarPartida(jComboBox2);
         actualizarPartida(jComboBox3);
+        
     }
 
     /**
@@ -89,26 +96,40 @@ public class Principal extends javax.swing.JFrame {
 
         jTable1.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null},
-                {null, null, null, null}
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null},
+                {null, null, null, null, null}
             },
             new String [] {
-                "Title 1", "Title 2", "Title 3", "Title 4"
+                "Nombre", "Velocidad", "Estrella", "Distancia", "Estatus"
             }
-        ));
+        ) {
+            Class[] types = new Class [] {
+                java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class, java.lang.String.class
+            };
+
+            public Class getColumnClass(int columnIndex) {
+                return types [columnIndex];
+            }
+        });
         jScrollPane2.setViewportView(jTable1);
 
         jButton7.setText("Comenzar");
+        jButton7.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton7ActionPerformed(evt);
+            }
+        });
 
         jButton8.setText("Pausar");
 
-        jComboBox4.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
-        jComboBox5.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-
         jButton9.setText("Agregar");
+        jButton9.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton9ActionPerformed(evt);
+            }
+        });
 
         javax.swing.GroupLayout jDialog1Layout = new javax.swing.GroupLayout(jDialog1.getContentPane());
         jDialog1.getContentPane().setLayout(jDialog1Layout);
@@ -175,10 +196,25 @@ public class Principal extends javax.swing.JFrame {
         jLabel2.setText("Partida");
 
         jButton1.setText("Iniciar Partida");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
 
         jButton2.setText("Eliminar Partida");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
 
         jButton3.setText("Editar Partida");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
 
         jLabel3.setText("Nombre de partida:");
 
@@ -387,7 +423,7 @@ public class Principal extends javax.swing.JFrame {
                 .addContainerGap()
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 25, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTabbedPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 257, Short.MAX_VALUE)
+                .addComponent(jTabbedPane1)
                 .addContainerGap())
         );
 
@@ -397,15 +433,37 @@ public class Principal extends javax.swing.JFrame {
     private void jButton6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton6ActionPerformed
         String nombre=jTextField4.getText();
         int velocidad=Integer.parseInt(jTextField5.getText());
-        p.addJugadores(new Jugadores(nombre, velocidad));
+        Jugadores jugadores =new Jugadores(nombre, velocidad);
+        p.addJugadores(jugadores);
+        String npartida =jComboBox3.getSelectedItem().toString();
+        int i=0,pos=0;
+        for (Partidas t : partidas){
+            if (t.getNombre().equals(npartida)){
+                pos=i;
+            }
+            i++;
+        }
+        partidas.get(pos).addJugadores(jugadores);
+        escribirArchivo();
+        
     }//GEN-LAST:event_jButton6ActionPerformed
 
     private void jButton5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton5ActionPerformed
         String nombre = jTextField3.getText();
         int distancia=Integer.parseInt(jTextField2.getText());
         String descripcion = jTextArea1.getText();
-        p.addEstrellas(new Estrellas(nombre, descripcion, distancia));
-        String npartida =jComboBox1.getSelectedItem().toString();
+        Estrellas estrella =new Estrellas(nombre, descripcion, distancia);
+        p.addEstrellas(estrella);
+        String npartida =jComboBox2.getSelectedItem().toString();
+        int i=0,pos=0;
+        for (Partidas t : partidas){
+            if (t.getNombre().equals(npartida)){
+                pos=i;
+            }
+            i++;
+        }
+        partidas.get(pos).addEstrellas(estrella);
+        escribirArchivo();
     }//GEN-LAST:event_jButton5ActionPerformed
 
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
@@ -417,6 +475,7 @@ public class Principal extends javax.swing.JFrame {
         actualizarPartida(jComboBox1);
         actualizarPartida(jComboBox2);
         actualizarPartida(jComboBox3);
+        
     }//GEN-LAST:event_jButton4ActionPerformed
 
     private void jComboBox1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jComboBox1ActionPerformed
@@ -426,6 +485,77 @@ public class Principal extends javax.swing.JFrame {
     private void jTextField1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jTextField1ActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_jTextField1ActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        String npartida= jComboBox1.getSelectedItem().toString();
+        int i=0;
+        for (Partidas t : partidas){
+            if (t.getNombre().equals(npartida)){
+                posicion=i;
+            }
+            i++;
+        }
+        actualizarJugador(posicion);
+        actualizarEstrella(posicion);
+        jDialog1.setModal(true);
+        jDialog1.pack();
+        jDialog1.setLocationRelativeTo(this);
+        jDialog1.setVisible(true);
+    }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton9ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton9ActionPerformed
+        modelo= new DefaultTableModel();
+        modelo.addColumn("Nombre");
+        modelo.addColumn("Velocidad");
+        modelo.addColumn("Estrella");
+        modelo.addColumn("Distancia");
+        modelo.addColumn("Estatus");
+        this.jTable1.setModel(modelo);
+        String [] info =new String[5];
+        String jugador=jComboBox4.getSelectedItem().toString();
+        String estrella=jComboBox5.getSelectedItem().toString();
+        int pos=0,pos2=0, i=0;
+        
+        for (Jugadores t : partidas.get(posicion).getJugadores()){
+            if (t.getNombre().equals(jugador)){
+                pos=i;
+            }
+            i++;
+        }
+        
+        i =0;
+        for (Estrellas t : partidas.get(posicion).getEstrellas()){
+            if (t.getNombre().equals(estrella)){
+                pos2=i;
+            }
+            i++;
+        }
+        info[0]=jugador;
+        info[1]=String.valueOf(partidas.get(posicion).getJugadores().get(pos).getVelocidad());
+        info[2]=estrella;
+        info[3]=String.valueOf(partidas.get(posicion).getEstrellas().get(pos2).getDistancia());
+        info[4]="espera";
+        modelo.addRow(info);
+        this.jTable1.setModel(modelo);
+    }//GEN-LAST:event_jButton9ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        partidas.remove(posicion);
+        escribirArchivo();
+        actualizarPartida(jComboBox1);
+    }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void jButton7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton7ActionPerformed
+
+        ab =new Administrarbar(jProgressBar1);
+        ab.start();
+    }//GEN-LAST:event_jButton7ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        String nombre = JOptionPane.showInputDialog("Ingrese el nuevo nombre de la partida:");
+        partidas.get(posicion).setNombre(nombre);
+        escribirArchivo();
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -506,32 +636,64 @@ public class Principal extends javax.swing.JFrame {
     private javax.swing.JTextField jTextField4;
     private javax.swing.JTextField jTextField5;
     // End of variables declaration//GEN-END:variables
+    
+    Administrarbar ab;
     Partidas p = new Partidas();
     public ArrayList <Partidas> partidas=new ArrayList();
     File archivo = new File(".\\Partidas\\Partidas.txt");
-    public void actualizarPartida(JComboBox jComboBox){
-        if (partidas.size()>0){
-            jComboBox.addItem(partidas.get(partidas.size()-1).getNombre());
+    int posicion;
+    DefaultTableModel modelo;
+    public void actualizarJugador(int pos){
+        DefaultComboBoxModel modelo = (DefaultComboBoxModel)jComboBox4.getModel();
+        modelo.removeAllElements();
+        for (Jugadores t : partidas.get(pos).getJugadores()) {
+            modelo.addElement(t.getNombre());
         }
+        jComboBox4.setModel(modelo);
+    }
+    
+    public void actualizarEstrella(int pos){
+        DefaultComboBoxModel modelo = (DefaultComboBoxModel)jComboBox5.getModel();
+        modelo.removeAllElements();
+        for (Estrellas t : partidas.get(pos).getEstrellas()) {
+            modelo.addElement(t.getNombre());
+        }
+        jComboBox5.setModel(modelo);
+    }
+    
+    public void actualizarPartida(JComboBox jComboBox){
+        DefaultComboBoxModel modelo = (DefaultComboBoxModel)jComboBox.getModel();
+        modelo.removeAllElements();
+        for (Partidas partida : partidas) {
+            modelo.addElement(partida.getNombre());
+        }
+        jComboBox.setModel(modelo);
+        jComboBox2.setModel(modelo);
+        jComboBox3.setModel(modelo);
     }
     
     public void cargarArchivo() {
         try { 
             Partidas temp;
             if (archivo.exists()) {
-                  FileInputStream entrada
-                    = new FileInputStream(archivo);
-                ObjectInputStream objeto
-                    = new ObjectInputStream(entrada);
+                    //FileInputStream entrada = new FileInputStream(archivo);
+                    ObjectInputStream objeto = new ObjectInputStream(new FileInputStream(archivo));
+                    temp = (Partidas)objeto.readObject();
+                    partidas.add(temp);
                 try {
-                    while ((temp = (Partidas) objeto.readObject()) != null) {
+                    /*while ((temp = (Partidas) objeto.readObject()) != null) {
+                        partidas.add(temp);
+                    }*/
+                    while (temp!=null){
+                        temp = (Partidas)objeto.readObject();
                         partidas.add(temp);
                     }
                 } catch (EOFException e) {
                     //encontro el final del archivo
+                    e.printStackTrace();
                 }
+               // objeto.close();
                 objeto.close();
-                entrada.close();
             } //fin if           
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -539,23 +701,39 @@ public class Principal extends javax.swing.JFrame {
     }
 
     public void escribirArchivo() {
-        FileOutputStream fw = null;
-        ObjectOutputStream bw = null;
+        //FileOutputStream fw = null;
+        //ObjectOutputStream bw = null;
         try {
-            fw = new FileOutputStream(archivo,true);
-            bw = new ObjectOutputStream(fw);
+             //FileOutputStream fw = new FileOutputStream(archivo);
+            ObjectOutputStream bw = new ObjectOutputStream(new FileOutputStream(archivo));
             for (Partidas t : partidas) {
                 bw.writeObject(t);
             }
-            bw.flush();
+           // bw.flush();
+           bw.close();
+           //fw.close();
         } catch (Exception ex) {
+            ex.printStackTrace();
         } finally {
             try {
-                bw.close();
-                fw.close();
+               // bw.close();
+               // fw.close();
             } catch (Exception ex) {
+                ex.printStackTrace();
             }
         }
+    }
+    public Object getBar(){
+        return this.jProgressBar1;
+    }
+    public int getVelocidad(){
+        int velocidad = Integer.parseInt(jTable1.getModel().getValueAt(0, 1).toString());
+        return velocidad;
+    }
+    
+    public int getDistancia(){
+        int distancia = Integer.parseInt(jTable1.getModel().getValueAt(0, 3).toString());
+        return distancia;
     }
     
 }
